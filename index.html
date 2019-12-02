@@ -13,21 +13,55 @@
         <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/recorderjs/0.1.0/recorder.min.js" integrity="sha256-4E+aHnOpisdHk/2SG6bFG/LaRYofqKaZnzr35jEBRuk=" crossorigin="anonymous"></script>
+        <script src="opus-recorder/dist/recorder.min.js"></script>
+        <script src="recorder.js"></script>
         <title>MusicCompare</title>
 
     </head>
     <body>
-        <div class="container d-flex justify-content-center align-items-center text-center">
+        <div class="container">
+            <h1 class="display-2">Source Files</h1>
+            <div class="justify-content-center align-items-center">
+                <form>
+                    <div class="input-group">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" accept="audio/*" id="recorder" aria-describedby="recorderAdd">
+                            <label class="custom-file-label" for="recorder">Choose file</label>
+                        </div>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-primary" type="button" id="recorderAdd">Add</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
             <div>
-                <input type="file" accept="audio/*" capture="microphone" id="recorder">
-                <br>
-                <audio id="player" controls></audio>
-                <div id="controls">
-                    <button id="recordButton">Record</button>
-                    <button id="pauseButton" disabled>Pause</button>
-                    <button id="stopButton" disabled>Stop</button>
+                <h3>Source</h3>
+                <ol id="sourceList"></ol>
+                <table class="table" id="sourceListNew">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Filename</th>
+                            <th scope="col">Audio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="container">
+            <h1 class="display-2">Recording Files</h1>
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="btn-group mr-2" role="group" id="controls">
+                    <button class="btn btn-outline-primary" id="recordButton"><i class="fas fa-circle"></i> Record</button>
+                    <button class="btn btn-outline-primary" id="pauseButton" value="pause" disabled><i class="fas fa-pause"></i> Pause</button>
+                    <!--                    <button class="btn btn-primary" id="resumeButton" disabled><i class="fas fa-eject fa-rotate-90"></i></button>-->
+                    <button class="btn btn-outline-primary" id="stopButton" disabled><i class="fas fa-stop"></i> Stop</button>
                 </div>
+                <span id="min">00</span>:<span id="sec">00</span>
+            </div>
+            <div>
                 <h3>Recordings</h3>
                 <ol id="recordingsList"></ol>
             </div>

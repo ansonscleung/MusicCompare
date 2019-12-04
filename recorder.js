@@ -6,6 +6,7 @@ $(document).ready(function () {
         wavBitDepth: parseInt(bitDepth.value,10),*/
         encoderPath: "opus-recorder/dist/waveWorker.min.js"
     });
+    var rec = {'#source': [], '#record': []};
 
     // https://jsfiddle.net/wizajay/rro5pna3/
     var Clock = {
@@ -60,12 +61,16 @@ $(document).ready(function () {
             $(this).html("<i class=\"fas fa-pause\"></i> Pause");
         } });
     $("#resumeButton").on( "click", function(){ recorder.resume(); });
-    $("#stopButton").on( "click", function(){ recorder.stop();
-                                             Clock.reset();});
+    $("#stopButton").on( "click", function(){
+        recorder.stop();
+        $("#recordTime").collapse('hide');
+        Clock.reset();
+    });
     $("#recordButton").on( "click", function(){ 
         recorder.start().catch(function(e){
             console.log('Error encountered:', e.message );
         });
+        $("#recordTime").collapse('show');
         Clock.start();
     });
     recorder.onstart = function(){
@@ -103,6 +108,7 @@ $(document).ready(function () {
     };
     recorder.ondataavailable = function( typedArray ){
         var dataBlob = new Blob( [typedArray], { type: 'audio/wav' } );
+        rec['#record'].push(dataBlob);
         var fileName = new Date().toISOString() + ".wav";
         var url = URL.createObjectURL( dataBlob );
         var audio = document.createElement('audio');
@@ -116,9 +122,81 @@ $(document).ready(function () {
         li.appendChild(link);
         li.appendChild(document.createElement('br'));
         li.appendChild(audio);
-        $('#recordingsList').append(li);
+        //$('#recordingsList').append(li);
+        var list = $('#recordingsListNew');
+        $(list).find('tbody').append($('<tr>')
+                                     .append($('<th>').text(rec['#record'].length).addClass("align-middle"))
+                                     .append($('<td>').html(link).addClass("align-middle"))
+                                     .append($('<td>').html(audio).addClass("align-middle"))
+                                    );
     };
 
+    $(document).on("click", "table tr", function(){
+        $(this).addClass('table-active').siblings().removeClass('table-active');
+        var value=$(this).find('td:first').find('a').attr('href');
+    });
+
+    $(document).on("click", '#compare', function(e){
+        console.log("Source File: ", $("#sourceListNew tr.table-active th:first").text());
+        console.log("Recording File: ", $("#recordingsListNew tr.table-active th:first").text());
+        var rec_file = rec['#record'][parseInt($("#recordingsListNew tr.table-active th:first").text(), 10)-1];
+        var reader = new FileReader();
+        var context = new(window.AudioContext || window.webkitAudioContext)();
+        /*reader.readAsArrayBuffer(rec_file);
+        reader.addEventListener("load", function ()  {
+            context.decodeAudioData(reader.result, function(buffer) {
+                prepare(buffer);
+            });
+        });*/
+        var src_file = rec['#source'][parseInt($("#sourceListNew tr.table-active th:first").text(), 10)-1];
+        reader.readAsArrayBuffer(src_file);
+        reader.addEventListener("load", function ()  {
+            context.decodeAudioData(reader.result, function(buffer) {
+                alert("Decoded");
+                prepare(buffer);
+            });
+        });
+    });
+
+    $(document).on("click", ".recorderAdd", function() {
+        input = $(this).attr('data-target');
+        if (!$(input)) {
+            alert("Um, couldn't find the fileinput element.");
+        }
+        else if (!$(input).prop("files")) {
+            alert("This browser doesn't seem to support the `files` property of file inputs.");
+        }
+        else if (!$(input).prop("files")[0]) {
+            alert("Please select a file before clicking 'Load'");
+        }
+        else {
+            file = $(input).prop("files")[0];
+            rec[input].push(file);
+            fr = new FileReader();
+            fr.readAsDataURL(file);
+            fr.addEventListener("load", function () {
+                var fileName = $(input).val().split("\\").pop();
+                var url = fr.result;
+                var audio = document.createElement('audio');
+                audio.controls = true;
+                audio.src = url;
+                var link = document.createElement('a');
+                link.href = url;
+                link.download = fileName;
+                link.innerHTML = link.download;
+                var li = document.createElement('li');
+                li.appendChild(link);
+                li.appendChild(document.createElement('br'));
+                li.appendChild(audio);
+                var list = $($(input).attr('data-target'));
+                $(list).find('tbody').append($('<tr>')
+                                             .append($('<th>').text(rec[input].length).addClass("align-middle"))
+                                             .append($('<td>').html($(link).attr('data-blob', file)).addClass("align-middle"))
+                                             .append($('<td>').html(audio).addClass("align-middle"))
+                                            );
+            }, false);
+        }
+    });
 });
 
 $(document).on("change", ".custom-file-input", function() {
@@ -126,42 +204,3 @@ $(document).on("change", ".custom-file-input", function() {
     $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
 });
 
-$(document).on("click", "#recorderAdd", function() {
-    input = $("#recorder");
-    if (!input) {
-        alert("Um, couldn't find the fileinput element.");
-    }
-    else if (!input.prop("files")) {
-        alert("This browser doesn't seem to support the `files` property of file inputs.");
-    }
-    else if (!input.prop("files")[0]) {
-        alert("Please select a file before clicking 'Load'");               
-    }
-    else {
-        file = input.prop("files")[0];
-        fr = new FileReader();
-        fr.readAsDataURL(file);
-        fr.addEventListener("load", function () {
-            var fileName = $("#recorder").val().split("\\").pop();
-            var url = fr.result;
-            var audio = document.createElement('audio');
-            audio.controls = true;
-            audio.src = url;
-            var link = document.createElement('a');
-            link.href = url;
-            link.download = fileName;
-            link.innerHTML = link.download;
-            var li = document.createElement('li');
-            li.appendChild(link);
-            li.appendChild(document.createElement('br'));
-            li.appendChild(audio);
-            //$('#sourceList').append(li);
-            var tbody = $("#sourceListNew").find('tbody');
-            tbody.append($('<tr>')
-                         .append($('<th>').text(parseInt(tbody.find('th').last().text(), 10) + 1))
-                         .append($('<td>').html(link))
-                         .append($('<td>').html(audio))
-                        );
-        }, false);
-    }
-});

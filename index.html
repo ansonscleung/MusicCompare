@@ -15,21 +15,22 @@
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
         <script src="opus-recorder/dist/recorder.min.js"></script>
         <script src="recorder.js"></script>
+        <script src="beat-detector.js"></script>
         <title>MusicCompare</title>
 
     </head>
     <body>
         <div class="container">
             <h1 class="display-2">Source Files</h1>
-            <div class="justify-content-center align-items-center">
+            <div class="d-flex justify-content-center align-items-center">
                 <form>
                     <div class="input-group">
                         <div class="custom-file">
-                            <input type="file" class="custom-file-input" accept="audio/*" id="recorder" aria-describedby="recorderAdd">
+                            <input type="file" class="custom-file-input" accept="audio/*" id="source" aria-describedby="recorderAdd" data-target="#sourceListNew">
                             <label class="custom-file-label" for="recorder">Choose file</label>
                         </div>
                         <div class="input-group-append">
-                            <button class="btn btn-outline-primary" type="button" id="recorderAdd">Add</button>
+                            <button class="btn btn-outline-primary recorderAdd" type="button" id="sourceAdd" data-target="#source">Add</button>
                         </div>
                     </div>
                 </form>
@@ -37,7 +38,7 @@
             <div>
                 <h3>Source</h3>
                 <ol id="sourceList"></ol>
-                <table class="table" id="sourceListNew">
+                <table class="table align-middle" id="sourceListNew" data-item="0">
                     <thead>
                         <tr>
                             <th scope="col">#</th>
@@ -59,12 +60,38 @@
                     <!--                    <button class="btn btn-primary" id="resumeButton" disabled><i class="fas fa-eject fa-rotate-90"></i></button>-->
                     <button class="btn btn-outline-primary" id="stopButton" disabled><i class="fas fa-stop"></i> Stop</button>
                 </div>
-                <span id="min">00</span>:<span id="sec">00</span>
+                <span id="recordTime" class="collapse"><span id="min">00</span>:<span id="sec">00</span></span>
+                <span class="mx-2">or</span>
+                <form>
+                    <div class="input-group ml-2">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" accept="audio/*" id="record" aria-describedby="recorderAdd" data-target="#recordingsListNew">
+                            <label class="custom-file-label" for="recorder">Choose file</label>
+                        </div>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-primary recorderAdd" type="button" id="recordAdd" data-target="#record">Add</button>
+                        </div>
+                    </div>
+                </form>
             </div>
             <div>
                 <h3>Recordings</h3>
                 <ol id="recordingsList"></ol>
+                <table class="table align-middle" id="recordingsListNew" data-item="0">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Filename</th>
+                            <th scope="col">Audio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
             </div>
+        </div>
+        <div class="container">
+            <button class="btn btn-primary btn-large" type="button" id="compare">Compare</button>
         </div>
     </body>
 </html>

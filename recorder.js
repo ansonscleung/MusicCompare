@@ -141,25 +141,22 @@ $(document).ready(function () {
     });
 
     // Compare button
-    $(document).on("click", '#compare', function(e){
+    $(document).on("click", '#compare', async function(e){
         console.log("Source File: ", $("#sourceListNew tr.table-active th:first").text());
         console.log("Recording File: ", $("#recordingsListNew tr.table-active th:first").text());
-        var rec_file = rec['#record'][parseInt($("#recordingsListNew tr.table-active th:first").text(), 10)-1];
-        var reader = new FileReader();
-        var context = new(window.AudioContext || window.webkitAudioContext)();
-        /*reader.readAsArrayBuffer(rec_file);
-        reader.addEventListener("load", function ()  {
-            context.decodeAudioData(reader.result, function(buffer) {
-                prepare(buffer);
+        var file = {};
+        file['Source'] = rec['#source'][parseInt($("#sourceListNew tr.table-active th:first").text(), 10)-1];
+        file['Record'] = rec['#record'][parseInt($("#recordingsListNew tr.table-active th:first").text(), 10)-1];
+        $.each(file, function(key, item){
+            var reader = new FileReader();
+            var context = new(window.AudioContext || window.webkitAudioContext)();
+            reader.addEventListener("load", function() {
+                context.decodeAudioData(reader.result).then(function(buffer){
+                    info(item, buffer);
+                    prepare(buffer, key);
+                });
             });
-        });*/
-        var src_file = rec['#source'][parseInt($("#sourceListNew tr.table-active th:first").text(), 10)-1];
-        reader.readAsArrayBuffer(src_file);
-        reader.addEventListener("load", function ()  {
-            context.decodeAudioData(reader.result, function(buffer) {
-                alert("Decoded");
-                prepare(buffer);
-            });
+            reader.readAsArrayBuffer(item);
         });
     });
 

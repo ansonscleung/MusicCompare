@@ -56,6 +56,7 @@ async function prepare(buffer, file) {
     offlineContext.oncomplete = function(e) {
         process(e, buffer.sampleRate).then(function(bpm){
             console.log(file + ": " + bpm);
+            $(file).text(bpm);
             return bpm;
         });
     };

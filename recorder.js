@@ -145,8 +145,8 @@ $(document).ready(function () {
         console.log("Source File: ", $("#sourceListNew tr.table-active th:first").text());
         console.log("Recording File: ", $("#recordingsListNew tr.table-active th:first").text());
         var file = {};
-        file['Source'] = rec['#source'][parseInt($("#sourceListNew tr.table-active th:first").text(), 10)-1];
-        file['Record'] = rec['#record'][parseInt($("#recordingsListNew tr.table-active th:first").text(), 10)-1];
+        file['#src_bpm'] = rec['#source'][parseInt($("#sourceListNew tr.table-active th:first").text(), 10)-1];
+        file['#rec_bpm'] = rec['#record'][parseInt($("#recordingsListNew tr.table-active th:first").text(), 10)-1];
         $.each(file, function(key, item){
             var reader = new FileReader();
             var context = new(window.AudioContext || window.webkitAudioContext)();

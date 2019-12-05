@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    // Initialise recorder
     var recorder = new Recorder({
         /*monitorGain: parseInt(monitorGain.value, 10),
         recordingGain: parseInt(recordingGain.value, 10),
@@ -8,6 +9,7 @@ $(document).ready(function () {
     });
     var rec = {'#source': [], '#record': []};
 
+    // Initialise clock
     // https://jsfiddle.net/wizajay/rro5pna3/
     var Clock = {
         totalSeconds: 0,
@@ -45,7 +47,8 @@ $(document).ready(function () {
         }
     };
 
-
+    // Initialise opus-recorder
+    // https://github.com/chris-rudmin/opus-recorder/blob/master/example/waveRecorder.html
     $("#pauseButton").on( "click", function(){ 
         if ($(this).val() == "pause"){
             //pause
@@ -131,11 +134,13 @@ $(document).ready(function () {
                                     );
     };
 
+    // Select source and recording files
     $(document).on("click", "table tr", function(){
         $(this).addClass('table-active').siblings().removeClass('table-active');
         var value=$(this).find('td:first').find('a').attr('href');
     });
 
+    // Compare button
     $(document).on("click", '#compare', function(e){
         console.log("Source File: ", $("#sourceListNew tr.table-active th:first").text());
         console.log("Recording File: ", $("#recordingsListNew tr.table-active th:first").text());

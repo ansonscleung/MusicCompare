@@ -135,7 +135,7 @@ $(document).ready(function () {
     };
 
     // Select source and recording files
-    $(document).on("click", "table tr", function(){
+    $(document).on("click", "table tbody tr", function(){
         $(this).addClass('table-active').siblings().removeClass('table-active');
         var value=$(this).find('td:first').find('a').attr('href');
     });
@@ -147,13 +147,18 @@ $(document).ready(function () {
         var file = {};
         file['#src_bpm'] = rec['#source'][parseInt($("#sourceListNew tr.table-active th:first").text(), 10)-1];
         file['#rec_bpm'] = rec['#record'][parseInt($("#recordingsListNew tr.table-active th:first").text(), 10)-1];
+        var audio = []
         $.each(file, function(key, item){
             var reader = new FileReader();
             var context = new(window.AudioContext || window.webkitAudioContext)();
             reader.addEventListener("load", function() {
                 context.decodeAudioData(reader.result).then(function(buffer){
                     info(item, buffer);
-                    prepare(buffer, key);
+                    prepare(buffer, key).then(function(bpm){console.log("Prepare then");});
+                    audio.push(buffer);
+                    console.log(audio.length);
+                    if (audio.length == 2)
+                        fingerprint(audio);
                 });
             });
             reader.readAsArrayBuffer(item);

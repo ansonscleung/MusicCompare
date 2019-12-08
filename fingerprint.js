@@ -37,7 +37,6 @@ async function fingerprint(audio, low, high) {
 
             ham_peaks.push(ham_peak);
             lev_peaks.push(lev_peak);
-            console.log(lev_peaks);
             if (ham_peaks.length == 2) {
                 var ham = hammingDistance(ham_peaks[0], ham_peaks[1])
                 console.log(low+' to '+high+"Hz Hamming Distance: " + ham + "(" + (1 - ham/ham_peak.length) + ")");
@@ -47,6 +46,42 @@ async function fingerprint(audio, low, high) {
                 console.log(low+' to '+high+"Hz Levenshtein Distance: " + lev + "(" + (1 - lev/Math.max(lev_peaks[0].length, lev_peaks[1].length)) + ")");
             }
         });
+    });
+}
+
+async function fingerprintAll(audio) {
+    console.log("Called fingerprintAll.");
+    var sRate = [audio[0].sampleRate, audio[1].sampleRate];
+    if (audio[1].length > audio[0].length) {
+        sRate[1] = audio[1].length*audio[1].sampleRate/audio[0].length;
+    } else {
+        sRate[0] = audio[0].length*audio[0].sampleRate/audio[1].length;
+    }
+
+    var ham_peaks = [];
+    var lev_peaks = [];
+    $.each(audio, function(index, buffer){
+        //If you want to analyze both channels, use the other channel later
+        var data = buffer.getChannelData(0);
+        var max = arrayMax(data);
+        var min = arrayMin(data);
+
+        var threshold = min + (max - min) * .6;
+        //console.log("threshold = " + threshold);
+        var ham_peak = getPeaksArrayAtThreshold(data, threshold, sRate[index], 100);
+        var lev_peak = getPeaksArrayAtThreshold(data, threshold, buffer.sampleRate, 10);
+        //console.log("peaks = " + lev_peak);
+
+        ham_peaks.push(ham_peak);
+        lev_peaks.push(lev_peak);
+        if (ham_peaks.length == 2) {
+            var ham = hammingDistance(ham_peaks[0], ham_peaks[1])
+            console.log("Full Hamming Distance: " + ham + "(" + (1 - ham/ham_peak.length) + ")");
+        }
+        if (lev_peaks.length == 2) {
+            var lev = levenshteinDistance(lev_peaks[0], lev_peaks[1])
+            console.log("Full Levenshtein Distance: " + lev + "(" + (1 - lev/Math.max(lev_peaks[0].length, lev_peaks[1].length)) + ")");
+        }
     });
 }
 
@@ -64,25 +99,6 @@ async function fingerprintProcess(e, sampleRate) {
     var peaks = getPeaksArrayAtThreshold(data, threshold, sampleRate);
     console.log("peaks = " + peaks);
     return peaks;
-
-    /*var intervalCounts = countIntervalsBetweenNearbyPeaks(peaks);
-    console.log("intervalCounts.length = " + intervalCounts.length);
-
-    var tempoCounts = groupNeighborsByTempo(intervalCounts, sampleRate, 40, 208);
-    tempoCounts.sort(function(a, b) {
-        return b.count - a.count;
-    });
-
-    console.log("tempoCounts.length = " + tempoCounts.length);
-
-    checkNumber(tempoCounts);
-
-    if (tempoCounts.length) {
-        //output.innerHTML = tempoCounts[0].tempo;
-        //document.getElementById("output").textContent = tempoCounts[0].tempo;
-        console.log(tempoCounts[0].tempo);
-        return tempoCounts[0].tempo;
-    } else return 0;*/
 }
 
 function getPeaksArrayAtThreshold(data, threshold, sampleRate, skip) {

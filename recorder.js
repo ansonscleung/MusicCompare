@@ -161,6 +161,7 @@ $(document).ready(function () {
                         fingerprint(audio, 20, 400);
                         fingerprint(audio, 400, 4000);
                         fingerprint(audio, 4000, 20000);
+                        fingerprintAll(audio)
                     }
                 });
             });

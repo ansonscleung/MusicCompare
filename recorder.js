@@ -157,8 +157,11 @@ $(document).ready(function () {
                     prepare(buffer, key).then(function(bpm){console.log("Prepare then");});
                     audio.push(buffer);
                     console.log(audio.length);
-                    if (audio.length == 2)
-                        fingerprint(audio);
+                    if (audio.length == 2) {
+                        fingerprint(audio, 20, 400);
+                        fingerprint(audio, 400, 4000);
+                        fingerprint(audio, 4000, 20000);
+                    }
                 });
             });
             reader.readAsArrayBuffer(item);

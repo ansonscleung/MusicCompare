@@ -1,4 +1,4 @@
-async function fingerprint(audio) {
+async function fingerprint(audio, low, high) {
     console.log("Called prepare.");
     console.log(audio);
     var sRate = [audio[0].sampleRate, audio[1].sampleRate];
@@ -7,30 +7,46 @@ async function fingerprint(audio) {
     } else {
         sRate[0] = audio[0].length*audio[0].sampleRate/audio[1].length;
     }
-    var peaks = [];
+
+    var ham_peaks = [];
+    var lev_peaks = [];
     $.each(audio, function(index, buffer){
         var offlineContext = new OfflineAudioContext(1, buffer.length, buffer.sampleRate);
         var source = offlineContext.createBufferSource();
         source.buffer = buffer;
         var filter = offlineContext.createBiquadFilter();
-        filter.type = "lowpass";
-        filter.frequency.value = 200;
+        filter.type = "bandpass";
+        // https://stackoverflow.com/questions/33540440/bandpass-filter-which-frequency-and-q-value-to-represent-frequency-range
+        var geometricMean = Math.sqrt(high * low);
+        filter.frequency.value = geometricMean;
+        filter.Q.value = geometricMean / (high - low);
         source.connect(filter);
         filter.connect(offlineContext.destination);
         source.start(0);
-        offlineContext.startRendering();
-        offlineContext.oncomplete = function(e) {
-            fingerprintProcess(e, sRate[index]).then(function(peak){
-                peaks.push(peak);
-                console.log(peaks.length);
-                if (peaks.length == 2)
-                    var ham = hammingDistance(peaks[0], peaks[1])
-                    console.log("Hamming Distance: " + ham + "(" + (1 - ham/peak.length) + ")");
+        offlineContext.startRendering().then(function(filteredBuffer) {
+            //If you want to analyze both channels, use the other channel later
+            var data = filteredBuffer.getChannelData(0);
+            var max = arrayMax(data);
+            var min = arrayMin(data);
 
-                    var lev = levenshteinDistance(peaks[0], peaks[1])
-                    console.log("Levenshtein Distance: " + lev + "(" + (1 - lev/peak.length) + ")");
-            });
-        };
+            var threshold = min + (max - min) * .6;
+            //console.log("threshold = " + threshold);
+            var ham_peak = getPeaksArrayAtThreshold(data, threshold, sRate[index], 100);
+            var lev_peak = getPeaksArrayAtThreshold(data, threshold, buffer.sampleRate, 10);
+            //console.log("peaks = " + lev_peak);
+
+            ham_peaks.push(ham_peak);
+            lev_peaks.push(lev_peak);
+            console.log(lev_peaks);
+            if (ham_peaks.length == 2) {
+                var ham = hammingDistance(ham_peaks[0], ham_peaks[1])
+                console.log(low+' to '+high+"Hz Hamming Distance: " + ham + "(" + (1 - ham/ham_peak.length) + ")");
+            }
+            if (lev_peaks.length == 2) {
+                var lev = levenshteinDistance(lev_peaks[0], lev_peaks[1])
+                console.log(low+' to '+high+"Hz Levenshtein Distance: " + lev + "(" + (1 - lev/Math.max(lev_peaks[0].length, lev_peaks[1].length)) + ")");
+            }
+        });
     });
 }
 
@@ -69,7 +85,7 @@ async function fingerprintProcess(e, sampleRate) {
     } else return 0;*/
 }
 
-function getPeaksArrayAtThreshold(data, threshold, sampleRate) {
+function getPeaksArrayAtThreshold(data, threshold, sampleRate, skip) {
     console.log("Called getPeaksAtThreshold with threshold " + threshold);
     var peaksArray = [];
     var length = data.length;
@@ -77,7 +93,7 @@ function getPeaksArrayAtThreshold(data, threshold, sampleRate) {
         //if (data[i] > threshold) {
         peaksArray.push(data[i] > threshold ? 1 : 0);
         // Skip forward ~ 1/4s to get past this peak.
-        i += sampleRate/100;
+        i += sampleRate/skip;
         //}
         //i++;
     }

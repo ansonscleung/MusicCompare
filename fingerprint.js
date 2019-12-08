@@ -24,8 +24,11 @@ async function fingerprint(audio) {
                 peaks.push(peak);
                 console.log(peaks.length);
                 if (peaks.length == 2)
-                    console.log("Hamming Distance: " + hammingDistance(peaks[0], peaks[1]));
-                    console.log("Levenshtein Distance: " + levenshteinDistance(peaks[0], peaks[1]));
+                    var ham = hammingDistance(peaks[0], peaks[1])
+                    console.log("Hamming Distance: " + ham + "(" + (1 - ham/peak.length) + ")");
+
+                    var lev = levenshteinDistance(peaks[0], peaks[1])
+                    console.log("Levenshtein Distance: " + lev + "(" + (1 - lev/peak.length) + ")");
             });
         };
     });

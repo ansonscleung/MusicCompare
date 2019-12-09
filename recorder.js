@@ -1,3 +1,6 @@
+var scoreTable = [];
+var bar;
+
 $(document).ready(function () {
     // Initialise recorder
     var recorder = new Recorder({
@@ -147,10 +150,11 @@ $(document).ready(function () {
         var file = {};
         file['#src_bpm'] = rec['#source'][parseInt($("#sourceListNew tr.table-active th:first").text(), 10)-1];
         file['#rec_bpm'] = rec['#record'][parseInt($("#recordingsListNew tr.table-active th:first").text(), 10)-1];
-        var audio = []
+        var audio = [];
         $.each(file, function(key, item){
             var reader = new FileReader();
             var context = new(window.AudioContext || window.webkitAudioContext)();
+
             reader.addEventListener("load", function() {
                 context.decodeAudioData(reader.result).then(function(buffer){
                     info(item, buffer);
@@ -161,12 +165,58 @@ $(document).ready(function () {
                         fingerprint(audio, 20, 400);
                         fingerprint(audio, 400, 4000);
                         fingerprint(audio, 4000, 20000);
-                        fingerprintAll(audio)
+                        fingerprintAll(audio);
                     }
+                    var offlineContext = new OfflineAudioContext(1, buffer.length, buffer.sampleRate);
+                    var source = offlineContext.createBufferSource();
+                    source.buffer = buffer;
+                    var analyser = offlineContext.createAnalyser();
+                    analyser.fftSize = 256;
+                    var bufferLength = analyser.frequencyBinCount;
+                    console.log(bufferLength);
+                    source.connect(analyser);
+                    analyser.connect(offlineContext.destination);
+                    source.start(0);
+                    var dataArray = new Uint8Array(bufferLength);
+                    offlineContext.startRendering().then(function(filteredBuffer) {
+                        analyser.getByteFrequencyData(dataArray);
+                        console.log(dataArray);
+                    });
                 });
             });
             reader.readAsArrayBuffer(item);
         });
+        $("#score").html();
+        bar = new ProgressBar.Circle('#score', {
+            color: '#aaa',
+            // This has to be the same size as the maximum width to
+            // prevent clipping
+            strokeWidth: 4,
+            trailWidth: 1,
+            easing: 'easeInOut',
+            duration: 1000,/*
+            text: {
+                autoStyleContainer: false
+            },*/
+            from: { color: '#f00', width: 1 },
+            to: { color: '#0d4', width: 4 },
+            // Set default step function for all animate calls
+            step: function(state, circle) {
+                circle.path.setAttribute('stroke', state.color);
+                circle.path.setAttribute('stroke-width', state.width);
+
+                var value = Math.round(circle.value() * 100);
+                if (value === 0) {
+                    circle.setText('');
+                } else {
+                    circle.setText(value);
+                }
+
+            }
+        });
+        //bar.text.style.fontFamily = '"Raleway", Helvetica, sans-serif';
+        bar.text.style.fontSize = '3rem';
+        bar.text.style.fontWeight = 'bold';
     });
 
     $(document).on("click", ".recorderAdd", function() {
@@ -215,3 +265,20 @@ $(document).on("change", ".custom-file-input", function() {
     $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
 });
 
+$(document).on("change", '#src_bpm', function() {
+    if ($('#rec_bpm').text() != "") {
+        scoreCalc(1 - Math.abs(parseInt($('#src_bpm').text(), 10)-parseInt($('#rec_bpm').text(), 10))/parseInt($('#src_bpm').text(), 10));
+    }
+});
+$(document).on("change", '#rec_bpm', function() {
+    if ($('#src_bpm').text() != "") {
+        scoreCalc(1 - Math.abs(parseInt($('#src_bpm').text(), 10)-parseInt($('#rec_bpm').text(), 10))/parseInt($('#src_bpm').text(), 10));
+    }
+});
+
+
+function scoreCalc(table) {
+    var len = table.length;
+    var score = table.reduce((a,b)=>a+b)/len;
+    bar.animate(score);
+}

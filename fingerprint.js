@@ -1,6 +1,5 @@
 async function fingerprint(audio, low, high) {
-    console.log("Called prepare.");
-    console.log(audio);
+    console.log("Called fingerprint.");
     var sRate = [audio[0].sampleRate, audio[1].sampleRate];
     if (audio[1].length > audio[0].length) {
         sRate[1] = audio[1].length*audio[1].sampleRate/audio[0].length;
@@ -38,12 +37,18 @@ async function fingerprint(audio, low, high) {
             ham_peaks.push(ham_peak);
             lev_peaks.push(lev_peak);
             if (ham_peaks.length == 2) {
-                var ham = hammingDistance(ham_peaks[0], ham_peaks[1])
-                console.log(low+' to '+high+"Hz Hamming Distance: " + ham + "(" + (1 - ham/ham_peak.length) + ")");
+                var ham = hammingDistance(ham_peaks[0], ham_peaks[1]);
+                var score = (1 - ham/ham_peak.length);
+                console.log(low+' to '+high+"Hz Hamming Distance: " + ham + "(" + score + ")");
+                scoreTable.push(score);
+                scoreCalc(scoreTable);
             }
             if (lev_peaks.length == 2) {
-                var lev = levenshteinDistance(lev_peaks[0], lev_peaks[1])
-                console.log(low+' to '+high+"Hz Levenshtein Distance: " + lev + "(" + (1 - lev/Math.max(lev_peaks[0].length, lev_peaks[1].length)) + ")");
+                var lev = levenshteinDistance(lev_peaks[0], lev_peaks[1]);
+                var score = (1 - lev/Math.max(lev_peaks[0].length, lev_peaks[1].length));
+                console.log(low+' to '+high+"Hz Levenshtein Distance: " + lev + "(" + score + ")");
+                scoreTable.push(score);
+                scoreCalc(scoreTable);
             }
         });
     });
@@ -86,7 +91,7 @@ async function fingerprintAll(audio) {
 }
 
 async function fingerprintProcess(e, sampleRate) {
-    console.log("Called process");
+    console.log("Called fingerprintProcess");
     var filteredBuffer = e.renderedBuffer;
     //If you want to analyze both channels, use the other channel later
     var data = filteredBuffer.getChannelData(0);
@@ -102,7 +107,7 @@ async function fingerprintProcess(e, sampleRate) {
 }
 
 function getPeaksArrayAtThreshold(data, threshold, sampleRate, skip) {
-    console.log("Called getPeaksAtThreshold with threshold " + threshold);
+    console.log("Called getPeaksArrayAtThreshold with threshold " + threshold);
     var peaksArray = [];
     var length = data.length;
     for (var i = 0; i < length;) {

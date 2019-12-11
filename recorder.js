@@ -1,4 +1,5 @@
 var scoreTable = [];
+var bpmTable = [];
 var bar;
 
 $(document).ready(function () {
@@ -158,7 +159,7 @@ $(document).ready(function () {
             reader.addEventListener("load", function() {
                 context.decodeAudioData(reader.result).then(function(buffer){
                     info(item, buffer);
-                    prepare(buffer, key).then(function(bpm){console.log("Prepare then");});
+                    prepare(buffer, key, 140, 40, 0.7, 200).then(function(bpm){console.log("Prepare then");});
                     audio.push(buffer);
                     console.log(audio.length);
                     if (audio.length == 2) {
@@ -281,4 +282,18 @@ function scoreCalc(table) {
     var len = table.length;
     var score = table.reduce((a,b)=>a+b)/len;
     bar.animate(score);
+}
+
+function bpmCalc(table) {
+    var len = table.length;
+    if (table.length == 2) {
+        var bpmScore = [];
+        bpmScore.push(1-Math.abs(table[0][0] - table[1][0])/table[0][0]);
+        bpmScore.push(1-Math.abs((table[0][0] + table[0][1]) - (table[1][0] + table[1][1]))/(table[0][0] + table[0][1]));
+        bpmScore.push(1-Math.abs((table[0][0] - table[0][1]) - (table[1][0] - table[1][1]))/(table[0][0] - table[0][1]));
+        var score = bpmScore.reduce((a,b)=>a+b)/bpmScore.length;
+        console.log("BPM Sorce: " + score);
+        scoreTable.push(score);
+        scoreCalc(scoreTable);
+    }
 }

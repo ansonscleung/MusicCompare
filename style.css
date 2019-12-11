@@ -1,3 +1,9 @@
 body {
     font-family: "Roboto", "Noto Sans HK", sans-serif;
 }
+.file-select{
+    height: 45vh;
+}
+.compare{
+    height: 10vh;
+}

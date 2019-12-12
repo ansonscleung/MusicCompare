@@ -194,6 +194,7 @@ $(document).ready(function () {
             });
             reader.readAsArrayBuffer(item);
         });
+        $("#result").removeClass("d-none").addClass("d-flex");
         $('html, body').animate({
             scrollTop: $("#result").offset().top
         }, 1000)
@@ -226,9 +227,10 @@ $(document).ready(function () {
             }
         });
         //bar.text.style.fontFamily = '"Raleway", Helvetica, sans-serif';
-        bar.text.style.fontSize = '3rem';
-        bar.text.style.fontWeight = 'bold';
+        bar.text.style.fontSize = '2rem';
+        bar.text.style.fontWeight = 'regular';
         bar.text.style.color = '#212529';
+        bar.setText("Processing");
     });
 
     $(document).on("click", ".recorderAdd", function() {
@@ -303,6 +305,8 @@ function scoreCalc(table) {
     var len = table.length;
     var score = table.reduce((a,b)=>a+b)/len;
     bar.animate(score);
+    bar.text.style.fontWeight = 'bold';
+    bar.text.style.fontSize = '5rem';
 }
 
 function bpmCalc(table) {

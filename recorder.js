@@ -131,6 +131,7 @@ $(document).ready(function () {
         li.appendChild(audio);
         //$('#recordingsList').append(li);
         var list = $('#recordingsListNew');
+        $(list).removeClass('d-none');
         $(list).find('tbody').append($('<tr>')
                                      .append($('<th>').text(rec['#record'].length).addClass("align-middle"))
                                      .append($('<td>').html(link).addClass("align-middle"))
@@ -146,11 +147,17 @@ $(document).ready(function () {
 
     // Compare button
     $(document).on("click", '#compare', async function(e){
-        console.log("Source File: ", $("#sourceListNew tr.table-active th:first").text());
-        console.log("Recording File: ", $("#recordingsListNew tr.table-active th:first").text());
+        var src_file = $("#sourceListNew tr.table-active th:first").text();
+        var rec_file = $("#recordingsListNew tr.table-active th:first").text();
+        if (!src_file || !rec_file) {
+            alert("Please select file before clicking 'Compare'");
+            return;
+        }
+        console.log("Source File: ", src_file);
+        console.log("Recording File: ", rec_file);
         var file = {};
-        file['#src_bpm'] = rec['#source'][parseInt($("#sourceListNew tr.table-active th:first").text(), 10)-1];
-        file['#rec_bpm'] = rec['#record'][parseInt($("#recordingsListNew tr.table-active th:first").text(), 10)-1];
+        file['#src_bpm'] = rec['#source'][parseInt(src_file, 10)-1];
+        file['#rec_bpm'] = rec['#record'][parseInt(rec_file, 10)-1];
         var audio = [];
         $.each(file, function(key, item){
             var reader = new FileReader();
@@ -187,7 +194,10 @@ $(document).ready(function () {
             });
             reader.readAsArrayBuffer(item);
         });
-        $("#score").html();
+        $('html, body').animate({
+            scrollTop: $("#result").offset().top
+        }, 1000)
+        $("#score").html("");
         bar = new ProgressBar.Circle('#score', {
             color: '#aaa',
             // This has to be the same size as the maximum width to
@@ -218,18 +228,22 @@ $(document).ready(function () {
         //bar.text.style.fontFamily = '"Raleway", Helvetica, sans-serif';
         bar.text.style.fontSize = '3rem';
         bar.text.style.fontWeight = 'bold';
+        bar.text.style.color = '#212529';
     });
 
     $(document).on("click", ".recorderAdd", function() {
         input = $(this).attr('data-target');
         if (!$(input)) {
             alert("Um, couldn't find the fileinput element.");
+            return;
         }
         else if (!$(input).prop("files")) {
             alert("This browser doesn't seem to support the `files` property of file inputs.");
+            return;
         }
         else if (!$(input).prop("files")[0]) {
             alert("Please select a file before clicking 'Load'");
+            return;
         }
         else {
             file = $(input).prop("files")[0];
@@ -251,6 +265,7 @@ $(document).ready(function () {
                 li.appendChild(document.createElement('br'));
                 li.appendChild(audio);
                 var list = $($(input).attr('data-target'));
+                $(list).removeClass('d-none');
                 $(list).find('tbody').append($('<tr>')
                                              .append($('<th>').text(rec[input].length).addClass("align-middle"))
                                              .append($('<td>').html($(link).attr('data-blob', file)).addClass("align-middle"))
@@ -260,6 +275,12 @@ $(document).ready(function () {
         }
     });
 });
+
+$(document).on("click", "#startBtn", function() {
+    $('html, body').animate({
+        scrollTop: $("#musicCompare").offset().top
+    }, 1000)
+})
 
 $(document).on("change", ".custom-file-input", function() {
     var fileName = $(this).val().split("\\").pop();

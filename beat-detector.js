@@ -66,6 +66,7 @@ async function prepare(buffer, file, sampleBPM, range, cutoff, filterFrequency) 
 		process(e, buffer.sampleRate, minBPM, maxBPM, cutoff).then(function(bpmInfo){
             console.log(file + ": " + bpmInfo[0] + "+-" + bpmInfo[1]);
             $(file).text(bpmInfo[0] + "+-" + bpmInfo[1].toFixed(2));
+            $(file).parent().removeClass("d-none");
             bpmTable.push(bpmInfo);
             bpmCalc(bpmTable);
             return bpm;

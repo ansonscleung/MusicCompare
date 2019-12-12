@@ -7,3 +7,6 @@ body {
 .compare{
     height: 10vh;
 }
+.table{
+    overflow-y: scroll;
+}

@@ -35,22 +35,35 @@
             </div>
         </div>
         <div class="container min-vh-100" id="musicCompare">
-            <div class="file-select d-md-flex flex-column flex-wrap">
-                <h1 class="display-3 file-display mb-0">Source</h1>
-                <div class="d-flex justify-content-center align-items-center file-pick">
-                    <form>
-                        <div class="input-group">
-                            <div class="custom-file">
-                                <input type="file" class="custom-file-input" accept="audio/*" id="source" aria-describedby="recorderAdd" data-target="#sourceListNew">
-                                <label class="custom-file-label" for="recorder">Choose file</label>
+            <div class="file-select d-sm-flex flex-column flex-wrap">
+                <h1 class="display-4 file-display m-0">Source</h1>
+                <div class="d-flex flex-column justify-content-center align-items-center file-pick m-0">
+                    <div class="mb-4">
+                        <form>
+                            <div class="input-group">
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" accept="audio/*" id="source" aria-describedby="recorderAdd" data-target="#sourceListNew">
+                                    <label class="custom-file-label" for="recorder">Choose file</label>
+                                </div>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-primary recorderAdd" type="button" id="sourceAdd" data-target="#source">Add</button>
+                                </div>
                             </div>
-                            <div class="input-group-append">
-                                <button class="btn btn-outline-primary recorderAdd" type="button" id="sourceAdd" data-target="#source">Add</button>
-                            </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
+                    <div>
+                        <select class="custom-select" id="sampleBPMSelection">
+                            <option disabled selected>Please select speed</option>
+                            <option value="40"> <i>Grave</i> / Very Slow</option>
+                            <option value="80"> <i>Andante</i> / Slow </option>
+                            <!--option value="2" selected = "selected"> Average</option -->
+                            <option value="120" > <i>Moderato</i> / Average</option>
+                            <option value="150"> <i>Allegro</i> / Fast </option>
+                            <option value="180"> <i>Presto</i> / Very Fast </option>
+                        </select>
+                    </div>
                 </div>
-                <div class="display-list my-1 overflow-auto">
+                <div class="display-list my-1 overflow-auto m-0">
                     <h3 class="d-none">Source</h3>
                     <table class="table align-middle d-none" id="sourceListNew" data-item="0">
                         <thead>
@@ -68,8 +81,8 @@
             <div class="compare d-flex">
                 <button class="btn btn-primary btn-lg m-auto" type="button" id="compare">Compare</button>
             </div>
-            <div class="file-select d-flex flex-column flex-wrap">
-                <h1 class="display-3 file-display mb-0">Recording</h1>
+            <div class="file-select d-sm-flex flex-column flex-wrap">
+                <h1 class="display-4 file-display mb-0">Recording</h1>
                 <div class="d-flex flex-column justify-content-center align-items-center file-pick">
                     <div class="btn-group mr-2" role="group" id="controls">
                         <button class="btn btn-outline-primary" id="recordButton"><i class="fas fa-circle"></i> Record</button>

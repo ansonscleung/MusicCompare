@@ -158,6 +158,11 @@ $(document).ready(function () {
         var file = {};
         file['#src_bpm'] = rec['#source'][parseInt(src_file, 10)-1];
         file['#rec_bpm'] = rec['#record'][parseInt(rec_file, 10)-1];
+
+        $('#src_bpm').text("");
+        $('#src_bpm').parent().addClass("d-none");
+        $('#rec_bpm').text("");
+        $('#rec_bpm').parent().addClass("d-none");
         var audio = [];
         $.each(file, function(key, item){
             var reader = new FileReader();
@@ -166,7 +171,8 @@ $(document).ready(function () {
             reader.addEventListener("load", function() {
                 context.decodeAudioData(reader.result).then(function(buffer){
                     info(item, buffer);
-                    prepare(buffer, key, 140, 40, 0.7, 200).then(function(bpm){console.log("Prepare then");});
+                    var selectedBPM = $("#sampleBPMSelection").val() ? $("#sampleBPMSelection").val() : 120;
+                    prepare(buffer, key, selectedBPM, 25, 0.75, 150).then(function(bpm){console.log("Prepare then");});
                     audio.push(buffer);
                     console.log(audio.length);
                     if (audio.length == 2) {

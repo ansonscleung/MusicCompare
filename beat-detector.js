@@ -69,7 +69,7 @@ async function prepare(buffer, file, sampleBPM, range, cutoff, filterFrequency) 
             $(file).parent().removeClass("d-none");
             bpmTable.push(bpmInfo);
             bpmCalc(bpmTable);
-            return bpm;
+            //return bpm;
         });
     };
 }
@@ -84,7 +84,7 @@ async function process(e, sampleRate, minBPM, maxBPM, cutoff) {
     var min = arrayMin(data);
     //console.log("max,min  = " + max + " " + min);
 
-    var threshold = min + (max - min) * cutoff;
+    var threshold = percentile(data, 0.75);//min + (max - min) * cutoff;
     //console.log("threshold = " + threshold);
     var peaks = getPeaksAtThreshold(data, threshold, sampleRate);
     //console.log("peaks = " + peaks);
@@ -156,7 +156,7 @@ function subProcess(subData, sampleRate, minBPM, maxBPM, cutoff, trial) {
     var max = arrayMax(subData);
     var min = arrayMin(subData);
     //console.log("max,min  = " + max + " " + min);
-    var threshold = min + (max - min) * cutoff;
+    var threshold = percentile(subData, 0.75);//min + (max - min) * cutoff;
     var peaks = getPeaksAtThreshold(subData, threshold, sampleRate);
 
     var intervalCounts = countIntervalsBetweenNearbyPeaks(peaks);

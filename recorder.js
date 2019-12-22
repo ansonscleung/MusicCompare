@@ -159,6 +159,8 @@ $(document).ready(function () {
         file['#src_bpm'] = rec['#source'][parseInt(src_file, 10)-1];
         file['#rec_bpm'] = rec['#record'][parseInt(rec_file, 10)-1];
 
+        scoreTable = []
+        bpmTable = []
         $('#src_bpm').text("");
         $('#src_bpm').parent().addClass("d-none");
         $('#rec_bpm').text("");
@@ -308,8 +310,10 @@ $(document).on("change", '#rec_bpm', function() {
 
 
 function scoreCalc(table) {
-    var len = table.length;
-    var score = table.reduce((a,b)=>a+b)/len;
+    var len = table.reduce((a,b)=>a+b.base, 0);//table.length;
+    var score = table.reduce((a,b)=>a+b.score*b.base, 0)/len;
+    console.log(table);
+    console.log(score);
     bar.animate(score);
     bar.text.style.fontWeight = 'bold';
     bar.text.style.fontSize = '5rem';
@@ -323,8 +327,8 @@ function bpmCalc(table) {
         bpmScore.push(1-Math.abs((table[0][0] + table[0][1]) - (table[1][0] + table[1][1]))/(table[0][0] + table[0][1]));
         bpmScore.push(1-Math.abs((table[0][0] - table[0][1]) - (table[1][0] - table[1][1]))/(table[0][0] - table[0][1]));
         var score = bpmScore.reduce((a,b)=>a+b)/bpmScore.length;
-        console.log("BPM Sorce: " + score);
-        scoreTable.push(score);
+        console.log("BPM Score: " + score);
+        scoreTable.push({type: "bpm", score: score, base:4});
         scoreCalc(scoreTable);
     }
 }

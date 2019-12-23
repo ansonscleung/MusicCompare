@@ -36,3 +36,6 @@ O. Trekhleb, "Levenshtein Distance, " Apr 2019
 
 I. Sukin, "percentile.js, " Aug 2015
 [https://gist.github.com/IceCreamYou/6ffa1b18c4c8f6aeaad2](https://gist.github.com/IceCreamYou/6ffa1b18c4c8f6aeaad2)
+
+K. Brunfeldt, “PROGRESS BAR.JS”  
+[https://kimmobrunfeldt.github.io/progressbar.js/](https://kimmobrunfeldt.github.io/progressbar.js/)

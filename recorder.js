@@ -359,7 +359,7 @@ function scoreCalc(table) {
         return ((x < y) ? -1 : ((x > y) ? 1 : 0));
     }), function(key, item) {
         var newBar = $("<div>").prop('id', "score_"+key).addClass('my-2');
-        $("#subScore").append(newBar).append($('<p>').addClass('card-title').text(item.type+": "+(item.score * 100).toFixed(2) + ' %'));
+        $("#subScore").append(newBar).append($('<p>').addClass('card-title').text(item.name+": "+(item.score * 100).toFixed(2) + ' %'));
         var bar = new ProgressBar.Line("#score_"+key, {
             color: '#aaa',
             strokeWidth: 4,

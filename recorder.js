@@ -2,6 +2,7 @@ var scoreTable = [];
 var bpmTable = [];
 var bar;
 
+
 $(document).ready(function () {
     // Initialise recorder
     var recorder = new Recorder({
@@ -140,9 +141,18 @@ $(document).ready(function () {
     };
 
     // Select source and recording files
-    $(document).on("click", "table tbody tr", function(){
+    $(document).on("click", "#recordingsListNew tbody tr", function(){
         $(this).addClass('table-active').siblings().removeClass('table-active');
         var value=$(this).find('td:first').find('a').attr('href');
+    });
+    $(document).on("click", "#sourceListNew tbody tr", function(){
+        $(this).addClass('table-active').siblings().removeClass('table-active');
+        var value=$(this).find('td:first').find('a').attr('href');
+        $("#startText").text("");
+        $("#endText").text("");
+        console.log(value);
+		//document.getElementById('audio_player').src = value;
+		wavesurfer.load(value);
     });
 
     // Compare button
@@ -173,7 +183,14 @@ $(document).ready(function () {
             reader.addEventListener("load", function() {
                 context.decodeAudioData(reader.result).then(function(buffer){
                     info(item, buffer);
-                    var selectedBPM = $("#sampleBPMSelection").val() ? $("#sampleBPMSelection").val() : 120;
+					var selectedBPM = $("#sampleBPMSelection").val() ? $("#sampleBPMSelection").val() : 120;
+
+					/************************************
+					Added this
+					************************************/
+                    if (key == '#src_bpm') buffer = getSelectionBuffer(buffer, startTime, EndTime);
+					console.log("Buffer length: "+buffer.length);
+
                     prepare(buffer, key, selectedBPM, 25, 0.75, 150).then(function(bpm){console.log("Prepare then");});
                     audio.push(buffer);
                     console.log(audio.length);
@@ -284,6 +301,21 @@ $(document).ready(function () {
             }, false);
         }
     });
+
+
+
+	/************************************
+					Added this
+	************************************/
+	$(document).on("click", '#startSelection', async function(e){
+        getStart();
+    });
+	/************************************
+					Added this
+	************************************/
+	$(document).on("click", '#endSelection', async function(e){
+        getEnd();
+    });
 });
 
 $(document).on("click", "#startBtn", function() {
@@ -295,6 +327,7 @@ $(document).on("click", "#startBtn", function() {
 $(document).on("change", ".custom-file-input", function() {
     var fileName = $(this).val().split("\\").pop();
     $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+
 });
 
 $(document).on("change", '#src_bpm', function() {
@@ -307,6 +340,9 @@ $(document).on("change", '#rec_bpm', function() {
         scoreCalc(1 - Math.abs(parseInt($('#src_bpm').text(), 10)-parseInt($('#rec_bpm').text(), 10))/parseInt($('#src_bpm').text(), 10));
     }
 });
+
+
+
 
 
 function scoreCalc(table) {
@@ -355,3 +391,5 @@ function bpmCalc(table) {
         scoreCalc(scoreTable);
     }
 }
+
+

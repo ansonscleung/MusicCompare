@@ -37,6 +37,11 @@ async function fingerprint(audio, low, high) {
             ham_peaks.push(ham_peak);
             lev_peaks.push(lev_peak);
             if (ham_peaks.length == 2) {
+                if (ham_peaks[0].length > ham_peaks[1].length) {
+                    ham_peaks[0].pop();
+                } else if (ham_peaks[1].length > ham_peaks[0].length) {
+                    ham_peaks[1].pop();
+                }
                 var ham = hammingDistance(ham_peaks[0], ham_peaks[1]);
                 var score = (1 - ham/ham_peak.length);
                 //console.log(low+' to '+high+"Hz Hamming Distance: " + ham + "(" + score + ")");
@@ -57,6 +62,7 @@ async function fingerprint(audio, low, high) {
 async function fingerprintAll(audio) {
     console.log("Called fingerprintAll.");
     var sRate = [audio[0].sampleRate, audio[1].sampleRate];
+    console.log("Audio length: "+audio[0].length+""+audio[1].length)
     if (audio[1].length > audio[0].length) {
         sRate[1] = audio[1].length*audio[1].sampleRate/audio[0].length;
     } else {
@@ -80,6 +86,11 @@ async function fingerprintAll(audio) {
         ham_peaks.push(ham_peak);
         lev_peaks.push(lev_peak);
         if (ham_peaks.length == 2) {
+            if (ham_peaks[0].length > ham_peaks[1].length) {
+                ham_peaks[0].pop();
+            } else if (ham_peaks[1].length > ham_peaks[0].length) {
+                ham_peaks[1].pop();
+            }
             var ham = hammingDistance(ham_peaks[0], ham_peaks[1])
             var score = (1 - ham/ham_peak.length);
             //console.log("Full Hamming Distance: " + ham + "(" + score + ")");

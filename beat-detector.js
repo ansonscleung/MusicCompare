@@ -63,7 +63,7 @@ async function prepare(buffer, file, sampleBPM, range, cutoff, filterFrequency) 
     offlineContext.oncomplete = function(e) {
         var minBPM = sampleBPM - range;
         var maxBPM = sampleBPM + range;
-        process(e, buffer.sampleRate, minBPM, maxBPM, cutoff).then(function(bpmInfo){
+        process(e, buffer.sampleRate, minBPM, maxBPM, cutoff, file).then(function(bpmInfo){
             console.log(file + ": " + bpmInfo[0] + "+-" + bpmInfo[1]);
             $(file).text(bpmInfo[0] + "+-" + bpmInfo[1].toFixed(2));
             $(file).parent().removeClass("d-none");
@@ -74,7 +74,7 @@ async function prepare(buffer, file, sampleBPM, range, cutoff, filterFrequency) 
     };
 }
 
-async function process(e, sampleRate, minBPM, maxBPM, cutoff) {
+async function process(e, sampleRate, minBPM, maxBPM, cutoff, file) {
     console.log("Called process");
     var filteredBuffer = e.renderedBuffer;
     //can use the other channel for analyse both channel
@@ -84,7 +84,7 @@ async function process(e, sampleRate, minBPM, maxBPM, cutoff) {
     var min = arrayMin(data);
     //console.log("max,min  = " + max + " " + min);
 
-    var threshold = percentile(data, 0.75);//min + (max - min) * cutoff;
+    var threshold = percentile(data.sort(), 0.75);//min + (max - min) * cutoff;
     //console.log("threshold = " + threshold);
     var peaks = getPeaksAtThreshold(data, threshold, sampleRate);
     //console.log("peaks = " + peaks);
@@ -131,6 +131,12 @@ async function process(e, sampleRate, minBPM, maxBPM, cutoff) {
             results.push(partialResult);
         }
         console.log("The subprocess result is " + results);
+
+        var canvas ={};
+
+        canvas['#src_bpm'] = "src_Canvas";
+        canvas['#rec_bpm'] = "rec_Canvas";
+        drawResult(results, mainBPM, canvas[file]);
         var rms = rmsError(mainBPM, results);
         console.log("The RMS error is " + rms);
         return [mainBPM, rms];
@@ -156,7 +162,7 @@ function subProcess(subData, sampleRate, minBPM, maxBPM, cutoff, trial) {
     var max = arrayMax(subData);
     var min = arrayMin(subData);
     //console.log("max,min  = " + max + " " + min);
-    var threshold = percentile(subData, 0.75);//min + (max - min) * cutoff;
+    var threshold = percentile(subData.sort(), 0.75)//min + (max - min) * cutoff;
     var peaks = getPeaksAtThreshold(subData, threshold, sampleRate);
 
     var intervalCounts = countIntervalsBetweenNearbyPeaks(peaks);

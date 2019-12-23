@@ -21,6 +21,7 @@
         <script src="hammingDistance.js"></script>
         <script src="levenshteinDistance.js"></script>
         <script src="percentile.js"></script>
+        <script src="visualiser.js"></script>
         <title>MusicCompare</title>
 
     </head>
@@ -122,26 +123,37 @@
             </div>
         </div>
         <div class="container vh-100 align-items-center d-none" id="result">
-            <div class="card-deck w-100 mx-0 text-center">
-                <div class="card">
-                    <!--                    <img class="card-img-top" src=".../100px200/" alt="Card image cap">-->
-                    <div class="card-body">
-                        <h2 class="display-4 card-title">Source</h2>
-                        <p class="card-text d-none">BPM: <span id="src_bpm"></span></p>
+            <div class="w-100 my-auto">
+                <div class="card-deck w-100 mx-0 my-4 text-center">
+                    <div class="card">
+                        <!--                    <img class="card-img-top" src=".../100px200/" alt="Card image cap">-->
+                        <div class="card-body">
+                            <h2 class="display-4 card-title">Source</h2>
+                            <p class="card-text d-none">BPM: <span id="src_bpm"></span></p>
+                            <canvas id="src_Canvas"></canvas>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <!--                    <img class="card-img-top" src=".../100px200/" alt="Card image cap">-->
+                        <div class="card-body">
+                            <h2 class="display-4 card-title">Score</h2>
+                            <div id="score"></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <!--                    <img class="card-img-top" src=".../100px200/" alt="Card image cap">-->
+                        <div class="card-body">
+                            <h2 class="display-4 card-title">Recording</h2>
+                            <p class="card-text d-none">BPM: <span id="rec_bpm"></span></p>
+                            <canvas id="rec_Canvas"></canvas>
+                        </div>
                     </div>
                 </div>
-                <div class="card">
+                <div class="card w-100 mx-0 my-4 text-center">
                     <!--                    <img class="card-img-top" src=".../100px200/" alt="Card image cap">-->
                     <div class="card-body">
                         <h2 class="display-4 card-title">Score</h2>
-                        <div id="score"></div>
-                    </div>
-                </div>
-                <div class="card">
-                    <!--                    <img class="card-img-top" src=".../100px200/" alt="Card image cap">-->
-                    <div class="card-body">
-                        <h2 class="display-4 card-title">Recording</h2>
-                        <p class="card-text d-none">BPM: <span id="rec_bpm"></span></p>
+                        <div id="subScore"></div>
                     </div>
                 </div>
             </div>

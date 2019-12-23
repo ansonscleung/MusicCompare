@@ -196,13 +196,13 @@ $(document).ready(function () {
                     var dataArray = new Uint8Array(bufferLength);
                     offlineContext.startRendering().then(function(filteredBuffer) {
                         analyser.getByteFrequencyData(dataArray);
-                        console.log(dataArray);
+                        //console.log(dataArray);
                     });
                 });
             });
             reader.readAsArrayBuffer(item);
         });
-        $("#result").removeClass("d-none").addClass("d-flex");
+        $("#result").removeClass("d-none").addClass("d-flex flex-column");
         $('html, body').animate({
             scrollTop: $("#result").offset().top
         }, 1000)
@@ -312,11 +312,34 @@ $(document).on("change", '#rec_bpm', function() {
 function scoreCalc(table) {
     var len = table.reduce((a,b)=>a+b.base, 0);//table.length;
     var score = table.reduce((a,b)=>a+b.score*b.base, 0)/len;
-    console.log(table);
-    console.log(score);
+    //console.log(table);
+    //console.log(score);
     bar.animate(score);
     bar.text.style.fontWeight = 'bold';
     bar.text.style.fontSize = '5rem';
+    $("#subScore").html("");
+    $.each(table.sort(function(a, b) {
+        var x = a.name; var y = b.name;
+        return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+    }), function(key, item) {
+        var newBar = $("<div>").prop('id', "score_"+key).addClass('my-2');
+        $("#subScore").append(newBar).append($('<p>').addClass('card-title').text(item.type+": "+(item.score * 100).toFixed(2) + ' %'));
+        var bar = new ProgressBar.Line("#score_"+key, {
+            color: '#aaa',
+            strokeWidth: 4,
+            easing: 'easeInOut',
+            duration: 1400,
+            trailColor: '#eee',
+            trailWidth: 1,
+            svgStyle: {width: '100%', height: '100%'},
+            from: { color: '#f00', width: 1 },
+            to: { color: '#0d4', width: 4 },
+            step: (state, bar) => {
+                bar.path.setAttribute('stroke', state.color);
+            }
+        });
+        bar.animate(item.score);
+    });
 }
 
 function bpmCalc(table) {
@@ -327,8 +350,8 @@ function bpmCalc(table) {
         bpmScore.push(1-Math.abs((table[0][0] + table[0][1]) - (table[1][0] + table[1][1]))/(table[0][0] + table[0][1]));
         bpmScore.push(1-Math.abs((table[0][0] - table[0][1]) - (table[1][0] - table[1][1]))/(table[0][0] - table[0][1]));
         var score = bpmScore.reduce((a,b)=>a+b)/bpmScore.length;
-        console.log("BPM Score: " + score);
-        scoreTable.push({type: "bpm", score: score, base:4});
+        //console.log("BPM Score: " + score);
+        scoreTable.push({type: "bpm", name: "Beats per minute (BPM)",score: score, base:2});
         scoreCalc(scoreTable);
     }
 }

@@ -28,7 +28,7 @@ async function fingerprint(audio, low, high) {
             var max = arrayMax(data);
             var min = arrayMin(data);
 
-            var threshold = percentile(data, 0.75);//min + (max - min) * .6;
+            var threshold = percentile(data.sort(), 0.75)//min + (max - min) * .6;
             //console.log("threshold = " + threshold);
             var ham_peak = getPeaksArrayAtThreshold(data, threshold, sRate[index], 100);
             var lev_peak = getPeaksArrayAtThreshold(data, threshold, buffer.sampleRate, 10);
@@ -39,15 +39,15 @@ async function fingerprint(audio, low, high) {
             if (ham_peaks.length == 2) {
                 var ham = hammingDistance(ham_peaks[0], ham_peaks[1]);
                 var score = (1 - ham/ham_peak.length);
-                console.log(low+' to '+high+"Hz Hamming Distance: " + ham + "(" + score + ")");
-                scoreTable.push({type: "ham_"+low+"_"+high, score: score, base:1});
+                //console.log(low+' to '+high+"Hz Hamming Distance: " + ham + "(" + score + ")");
+                scoreTable.push({type: "ham_"+low+"_"+high, name: low+' to '+high+"Hz Audio fingerprint (Hamming)", score: score, base:1});
                 scoreCalc(scoreTable);
             }
             if (lev_peaks.length == 2) {
                 var lev = levenshteinDistance(lev_peaks[0], lev_peaks[1]);
                 var score = (1 - lev/Math.max(lev_peaks[0].length, lev_peaks[1].length));
-                console.log(low+' to '+high+"Hz Levenshtein Distance: " + lev + "(" + score + ")");
-                scoreTable.push({type: "lev_"+low+"_"+high, score: score, base:2});
+                //console.log(low+' to '+high+"Hz Levenshtein Distance: " + lev + "(" + score + ")");
+                scoreTable.push({type: "lev_"+low+"_"+high, name: low+' to '+high+"Hz Audio fingerprint (Levanshtein)", score: score, base:2});
                 scoreCalc(scoreTable);
             }
         });
@@ -71,7 +71,7 @@ async function fingerprintAll(audio) {
         var max = arrayMax(data);
         var min = arrayMin(data);
 
-        var threshold = percentile(data, 0.75);//min + (max - min) * .6;
+        var threshold = percentile(data.sort(), 0.75)//min + (max - min) * .6;
         //console.log("threshold = " + threshold);
         var ham_peak = getPeaksArrayAtThreshold(data, threshold, sRate[index], 100);
         var lev_peak = getPeaksArrayAtThreshold(data, threshold, buffer.sampleRate, 10);
@@ -82,15 +82,15 @@ async function fingerprintAll(audio) {
         if (ham_peaks.length == 2) {
             var ham = hammingDistance(ham_peaks[0], ham_peaks[1])
             var score = (1 - ham/ham_peak.length);
-            console.log("Full Hamming Distance: " + ham + "(" + score + ")");
-            scoreTable.push({type: "ham_all", score: score, base:1});
+            //console.log("Full Hamming Distance: " + ham + "(" + score + ")");
+            scoreTable.push({type: "ham_all", name: "Audio fingerprint (Hamming)", score: score, base:1});
             scoreCalc(scoreTable);
         }
         if (lev_peaks.length == 2) {
             var lev = levenshteinDistance(lev_peaks[0], lev_peaks[1])
             var score = (1 - lev/Math.max(lev_peaks[0].length, lev_peaks[1].length));
-            console.log("Full Levenshtein Distance: " + lev + "(" + score + ")");
-            scoreTable.push({type: "lev_all", score: score, base:2});
+            //console.log("Full Levenshtein Distance: " + lev + "(" + score + ")");
+            scoreTable.push({type: "lev_all", name: "Audio fingerprint (Levanshtein)", score: score, base:2});
             scoreCalc(scoreTable);
         }
     });
@@ -105,7 +105,7 @@ async function fingerprintProcess(e, sampleRate) {
     var min = arrayMin(data);
     //console.log("max,min  = " + max + " " + min);
 
-    var threshold = percentile(data, 0.85);//min + (max - min) * .6;
+    var threshold = percentile(data.sort(), 0.85)//min + (max - min) * .6;
     //console.log("threshold = " + threshold);
     var peaks = getPeaksArrayAtThreshold(data, threshold, sampleRate);
     console.log("peaks = " + peaks);

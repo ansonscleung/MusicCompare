@@ -2,7 +2,7 @@
 
 This is the code for the AIST 2010 (2019s1) project, by Anson S.C. Leung and Wong Ha Tan Steven.
 
-Here are the [online version]([http://appsrv.cse.cuhk.edu.hk/~scleung7/MusicCompare/](http://appsrv.cse.cuhk.edu.hk/~scleung7/MusicCompare/)).
+Here are the [online version](https://appsrv.cse.cuhk.edu.hk/~scleung7/MusicCompare/).
 
 ##  Browser support
 The application works only in the browser supporting [Web Audio API](http://caniuse.com/audio-api).
